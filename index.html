@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>WTFSIK</title>
+</head>
+<style>
+    html, body{
+        margin: 0px;
+    }
+
+    @media screen and (max-width: 600px) {
+        html{ font-size: 0.8rem;}
+    }
+
+    #map {
+        height: 100vh;
+        width: 100vw;
+    }
+
+    #splash{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        z-index: 1000;
+        top: 50vh;
+        left: 50vw;
+        margin-left: -213px;
+        margin-top: -65px;
+        opacity: 1;
+        transition: opacity ease-out 0.5s;
+        text-transform: uppercase;
+    }
+
+    #splash.hidden{
+        opacity: 0;
+    }
+
+    #controls span, strong{
+        background-color: yellow;
+        text-transform: uppercase;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    #controls {
+        position: absolute;
+        top: 10vh;
+        z-index: 10001;
+        transition: opacity ease-in 0.5s;
+        opacity: 1;
+    }
+
+    .next{
+        font-size: 2rem;
+        text-transform: uppercase;
+        background-color: black;
+        color: yellow;
+        padding: 15px;
+        width: 370px;
+        position: absolute;
+        bottom: 0px;
+        transition: opacity ease-in 0.5s;
+        opacity: 1;
+        z-index: 10001;
+        margin-bottom: 70px;
+        right: 0px;
+    }
+
+    #controls.hidden{
+        opacity: 0;
+    }
+
+    .next.hidden{
+        opacity: 0;
+    }
+
+    #controls strong{
+        font-size: 2.8rem;
+    }
+
+    #controls span{
+        font-size: 1.6rem;
+    }
+
+    .fa-map-pin{
+        color: red;
+    }
+</style>
+<body>
+<article>
+    <section id="splash">
+        <i class="fa fa-map-pin fa-4x" aria-hidden="true"></i>
+        <h2>Getting you fucking location to</h2>
+    </section>
+    <section id="controls" class="hidden">
+        <p><span>Why don't you fucking go </span></p>
+        <strong>toast place</strong>
+        <p><span>45 RESERVOIR ST, SURRY HILLS NSW 2010, AUSTRALIA</span></p>
+
+    </section>
+    <div class="next hidden">no, that place is shit</div>
+    <section class="map" id="map">
+    </section>
+</article>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrwst4o0SDo9c8PdeAQ1nJ3663LkirZdc&libraries=places">
+</script>
+<script>
+    var MAPS_API_KEY = "AIzaSyBrwst4o0SDo9c8PdeAQ1nJ3663LkirZdc";
+    $(document).ready(function () {
+        initMap();
+        $('.next').on('click', function () {
+            alert('get next');
+        });
+    });
+
+    function getPlaces(lat, long){
+
+    }
+
+    function initMap() {
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                $('#splash').addClass('hidden');
+                $('#controls').removeClass('hidden');
+                $('.next').removeClass('hidden');
+                var request = {
+                    location:  new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+                    radius: '500',
+                    types: ['gym']
+                };
+                getPlaces(position.coords.latitude, position.coords.longitude);
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 16,
+                    center: initialLocation,
+                    disableDefaultUI: true,
+                    styles: [
+                        {
+                            "featureType": "road.highway",
+                            "elementType": "geometry",
+                            "stylers": [
+                                { "color":"white"},
+                                { "saturation": -100 },
+                                { "lightness": -8 },
+                                { "gamma": 1.18 }
+                            ]
+                        }, {
+                            "featureType": "road.arterial",
+                            "elementType": "geometry",
+                            "stylers": [
+                                { "color":"white"},
+                            ]
+                        }, {
+                            "featureType": "poi",
+                            "elementType": "geometry",
+                            "stylers": [
+                                { "saturation": -100 }
+                            ]
+                        }, {
+                            "featureType": "administrative",
+                            "stylers": [
+                                { "saturation": -100 }
+                            ]
+                        }, {
+                            "featureType": "transit",
+                            "stylers": [
+                                { "saturation": -100 }
+                            ]
+                        }, {
+                            "featureType": "water",
+                            "elementType": "geometry.fill",
+                            "stylers": [
+                                { "saturation": -100 }
+                            ]
+                        }, {
+                            "featureType": "road",
+                            "stylers": [
+                                { "saturation": -100 }
+                            ]
+                        }, {
+                            "featureType": "administrative",
+                            "stylers": [
+                                { "saturation": -100 }
+                            ]
+                        }, {
+                            "featureType": "landscape",
+                            "stylers": [
+                                { "saturation": -100 }
+                            ]
+                        }, {
+                            "featureType": "poi",
+                            "stylers": [
+                                { "saturation": -100 }
+                            ]
+                        }
+
+                    ]
+                });
+
+                var service = new google.maps.places.PlacesService(map);
+                service.nearbySearch(request, function(results, status) {
+                    if (status == google.maps.places.PlacesServiceStatus.OK) {
+                        for (var i = 0; i < results.length; i++) {
+                            var place = results[i];
+                            // If the request succeeds, draw the place location on
+                            // the map as a marker, and register an event to handle a
+                            // click on the marker.
+                            var marker = new google.maps.Marker({
+                                map: map,
+                                position: place.geometry.location
+                            });
+                        }
+                    }
+                });
+                var marker = new google.maps.Marker({
+                    position: initialLocation,
+                    map: map
+                });
+            });
+        }
+    }
+</script>
+</html>
