@@ -114,11 +114,16 @@
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrwst4o0SDo9c8PdeAQ1nJ3663LkirZdc&libraries=places,directions">
-</script>
+{% if jekyll.environment == "production" %}
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVFsviUygP4XznjaAQdrL7LIfcOpKtlz0&libraries=places,directions"></script>
+{% endif %}
+
+{% if jekyll.environment == "development" %}
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrwst4o0SDo9c8PdeAQ1nJ3663LkirZdc&libraries=places,directions"></script>
+{% endif %}
+
 <script>
-    var MAPS_API_KEY = "AIzaSyBrwst4o0SDo9c8PdeAQ1nJ3663LkirZdc";
+
     $(document).ready(function () {
         initMap();
         $('.next').on('click', function () {
