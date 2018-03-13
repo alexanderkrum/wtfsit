@@ -96,12 +96,12 @@
 <article>
     <section id="splash">
         <i class="fa fa-map-pin fa-4x" aria-hidden="true"></i>
-        <h2>Getting you fucking location to</h2>
+        <h2>Getting your fucking location to pump</h2>
     </section>
     <section id="controls" class="hidden">
-        <p><span>Why don't you fucking go </span></p>
-        <strong>toast place</strong>
-        <p><span>45 RESERVOIR ST, SURRY HILLS NSW 2010, AUSTRALIA</span></p>
+        <p><span>Why don't you fucking go to</span></p>
+        <strong id="name">your place comming here</strong>
+        <p><span id="adress">the address</span></p>
 
     </section>
     <div class="next hidden">no, that place is shit</div>
@@ -112,23 +112,18 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrwst4o0SDo9c8PdeAQ1nJ3663LkirZdc&libraries=places">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrwst4o0SDo9c8PdeAQ1nJ3663LkirZdc&libraries=places,directions">
 </script>
 <script>
     var MAPS_API_KEY = "AIzaSyBrwst4o0SDo9c8PdeAQ1nJ3663LkirZdc";
     $(document).ready(function () {
         initMap();
         $('.next').on('click', function () {
-            alert('get next');
+            window.location.reload();
         });
     });
 
-    function getPlaces(lat, long){
-
-    }
-
     function initMap() {
-
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
                 initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -140,7 +135,6 @@
                     radius: '500',
                     types: ['gym']
                 };
-                getPlaces(position.coords.latitude, position.coords.longitude);
                 var map = new google.maps.Map(document.getElementById('map'), {
                     zoom: 16,
                     center: initialLocation,
@@ -208,27 +202,61 @@
                     ]
                 });
 
+                var directionsService = new google.maps.DirectionsService();
+                var directionsDisplay = new google.maps.DirectionsRenderer({
+                    map: map,
+                    preserveViewport: true,
+                    // polylineOptions: {
+                    //     strokeColor: "orange"
+                    // }
+                });
+
                 var service = new google.maps.places.PlacesService(map);
                 service.nearbySearch(request, function(results, status) {
                     if (status == google.maps.places.PlacesServiceStatus.OK) {
-                        for (var i = 0; i < results.length; i++) {
+                        //for (var i = 0; i < results.length; i++) {
+                            let i = getRandomInt(results.length);
                             var place = results[i];
                             // If the request succeeds, draw the place location on
                             // the map as a marker, and register an event to handle a
                             // click on the marker.
                             var marker = new google.maps.Marker({
                                 map: map,
-                                position: place.geometry.location
+                                position: place.geometry.location,
+                                icon: '/images/icons/dumbbell-48.png'
+                                // icon: place.icon
                             });
-                        }
+                            $('#name').html(place.name);
+                            $('#adress').html(place.vicinity);
+                            //directionsDisplay.setMap(map);
+                            calcRoute(directionsService, directionsDisplay, initialLocation, place.geometry.location);
+                        //}
                     }
                 });
+
                 var marker = new google.maps.Marker({
                     position: initialLocation,
                     map: map
                 });
             });
         }
+    }
+
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * Math.floor(max));
+    }
+
+    function calcRoute(directionsService, directionsDisplay, start, end) {
+        var request = {
+            origin: start,
+            destination: end,
+            travelMode: 'WALKING'
+        };
+        directionsService.route(request, function(result, status) {
+            if (status == 'OK') {
+                directionsDisplay.setDirections(result);
+            }
+        });
     }
 </script>
 </html>
